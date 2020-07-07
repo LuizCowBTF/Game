@@ -1,7 +1,7 @@
 {
   "name": "snake-version",
   "version": "1.0.0",
-  "description": "implementação de gameplay similar a um jogo da cobrinha (com elementos multiplayer) ao 'meu primeiro jogo multiplayer' do Filipe Deschamps",
+  "description": "TESTE DESENVOLVIDOPARA JOVENS GENIOS",
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon ./src/server.js",

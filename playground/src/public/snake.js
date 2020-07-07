@@ -1,17 +1,20 @@
 // eslint-disable-next-line no-undef
 const socket = io(document.URL);
 socket.on('connect', () => {
-    console.log('> Connected to server');
+    console.log('> Conectado ao servidor');
 });
+
 socket.on('disconnect', () => {
-    console.log('> Disconnected');
-    if (confirm("Você foi desconectado.\nPressione OK para tentar reconectar.")) {
+    console.log('> Disconectado');
+    if (confirm("Você foi desconectado.\nPressione OK para tentar reconectar.")) 
+    {
         location.reload();
     }
 });
 
 const screen = document.getElementById('screen');
 const context = screen.getContext('2d');
+
 let game;
 let currentPlayer;
 
@@ -21,52 +24,66 @@ socket.on('bootstrap', (gameInitialState) => {
 
     requestAnimationFrame(renderGame);
 
-    function renderGame() {
+    function renderGame(){
         context.globalAlpha = 1;
         context.clearRect(0, 0, screen.width, screen.height);
 
-        for (const i in game.players) {
+        for (const i in game.players) 
+        {
             const player = game.players[i];
-            for (let j = 0; j < player.body.length; j++) {
+            for (let j = 0; j < player.body.length; j++) 
+            {
                 context.fillStyle = '#ffffff';
                 context.globalAlpha = 0.20;
                 context.fillRect(player.body[j].x, player.body[j].y, 1, 1);
-                if (player.id === socket.id) {
+
+                if (player.id === socket.id) 
+                {
                     context.fillStyle = '#80e040';
                     context.globalAlpha = 0.40;
                     context.fillRect(player.body[j].x, player.body[j].y, 1, 1);
                 }
             }
+
             context.fillStyle = '#ffffff';
             context.globalAlpha = 0.40;
             context.fillRect(player.body[0].x, player.body[0].y, 1, 1);
-            if (player.id === socket.id) {
+
+            if (player.id === socket.id) 
+            {
                 context.fillStyle = '#80e040';
                 context.globalAlpha = 1;
                 context.fillRect(player.body[0].x, player.body[0].y, 1, 1);
             }
         }
-        for (const i in game.fruits) {
+
+        for (const i in game.fruits) 
+        {
             const fruit = game.fruits[i];
             context.fillStyle = '#d01050';
             context.globalAlpha = 1;
             context.fillRect(fruit.x, fruit.y, 1, 1);
         }
+
         updateScoreTable();
         requestAnimationFrame(renderGame);
     }
 
-    function updateScoreTable() {
+    function updateScoreTable(){
         const scoreTable = document.getElementById('score');
         const maxResults = 10;
+
         let scoreTableInnerHTML = `
             <tr class="header">
                 <td>Top 10 Jogadores</td>
                 <td>Pontos</td>
             </tr>
             `;
+
         const scoreArray = [];
-        for (const i in game.players) {
+
+        for (const i in game.players) 
+        {
             const player = game.players[i];
             scoreArray.push({
                 player: player.id,
@@ -75,10 +92,13 @@ socket.on('bootstrap', (gameInitialState) => {
         }
 
         const scoreArraySorted = scoreArray.sort((first, second) => {
-            if (first.score < second.score) {
+            if (first.score < second.score) 
+            {
                 return 1;
             }
-            if (first.score > second.score) {
+
+            if (first.score > second.score) 
+            {
                 return -1;
             }
             return 0;
@@ -96,15 +116,18 @@ socket.on('bootstrap', (gameInitialState) => {
 
         let playerNotInTop10 = true;
 
-        for (const score of scoreSliced) {
-            if (socket.id === score.player) {
+        for (const score of scoreSliced) 
+        {
+            if (socket.id === score.player) 
+            {
                 playerNotInTop10 = false;
                 break;
             }
             playerNotInTop10 = true;
         }
 
-        if (playerNotInTop10) {
+        if (playerNotInTop10) 
+        {
             scoreTableInnerHTML += `
                 <tr class="current-player bottom">
                     <td class="socket-id">${socket.id}</td>

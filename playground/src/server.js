@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
 })
 app.use(cors);
 
-const logOnline = () => console.log('> ONLINE NOW: ' + online);
+const logOnline = () => console.log('> ONLINE AGORA: ' + online);
 
 //setInterval(logOnline, 30000)
 
@@ -28,17 +28,21 @@ let online = game.players.length;
 
 setInterval(addFruit, 6000);
 
-function addFruit() {
-    if (game.fruits.length < 7) {
+function addFruit(){
+    if (game.fruits.length < 7) 
+    {
         game.fruits.push({
             x: Math.floor(Math.random() * (1 - 29)) + 29,
             y: Math.floor(Math.random() * (1 - 29)) + 29
         });
-        for (const i in game.fruits) {
+        for (const i in game.fruits) 
+        {
             const fruit = game.fruits[i];
-            for (const j in game.players) {
+            for (const j in game.players) 
+            {
                 const player = game.players[j];
-                if (fruit.y === player.y && fruit.x === player.x) {
+                if (fruit.y === player.y && fruit.x === player.x) 
+                {
                     game.fruits.splice(-1, 1);
                     addFruit();
                 }
@@ -49,7 +53,7 @@ function addFruit() {
 }
 
 io.on('connection', socket => {
-    console.log("\x1b[33m", '> ' + socket.id + ' = CONNECT', "\x1b[0m");
+    console.log("\x1b[33m", '> ' + socket.id + ' = CONECTAR', "\x1b[0m");
     game.players.push({
         id: socket.id,
         body: [],
@@ -69,15 +73,16 @@ io.on('connection', socket => {
 
     const autoMove = setInterval(checkLastMovement, 500);
 
-    function checkLastMovement() {
-        if (game.players[currentPlayer].lastMovement) {
+    function checkLastMovement(){
+        if (game.players[currentPlayer].lastMovement) 
+        {
             newMovement(game.players[currentPlayer].lastMovement);
         }
     }
 
     socket.on('playerMove', keyPressed => newMovement(keyPressed));
 
-    function newMovement(moveData) {
+    function newMovement(moveData){
         switch (moveData) {
             case "ArrowUp":
                 game.players[currentPlayer].lastMovement = "ArrowUp";
@@ -104,10 +109,11 @@ io.on('connection', socket => {
                     game.players[currentPlayer].body[0].x -= 30;
                 break;
             default:
-                return;
+            return;
         }
 
-        for (let i = game.players[currentPlayer].body.length - 1; i > 0; i--) {
+        for (let i = game.players[currentPlayer].body.length - 1; i > 0; i--) 
+        {
             game.players[currentPlayer].body[i].x = game.players[currentPlayer].body[i - 1].x;
             game.players[currentPlayer].body[i].y = game.players[currentPlayer].body[i - 1].y;
         }
@@ -115,9 +121,11 @@ io.on('connection', socket => {
         socket.emit('newGameState', game);
         socket.broadcast.emit('newGameState', game);
 
-        for (const i in game.fruits) {
+        for (const i in game.fruits) 
+        {
             const fruit = game.fruits[i];
-            if (game.players[currentPlayer].body[0].x === fruit.x && game.players[currentPlayer].body[0].y === fruit.y) {
+            if (game.players[currentPlayer].body[0].x === fruit.x && game.players[currentPlayer].body[0].y === fruit.y) 
+            {
                 game.fruits.splice(i, 1);
                 game.players[currentPlayer].points++;
 
@@ -133,14 +141,19 @@ io.on('connection', socket => {
                 socket.broadcast.emit('newGameState', game);
             }
         }
-        for (const i in game.players) {
+        for (const i in game.players) 
+        {
             const player = game.players[i];
-            if (player.id !== game.players[currentPlayer].id) {
-                for (let j = 0; j < player.body.length; j++) {
-                    if (game.players[currentPlayer].body[0].x === player.body[j].x && game.players[currentPlayer].body[0].y === player.body[j].y) {
+            if (player.id !== game.players[currentPlayer].id) 
+            {
+                for (let j = 0; j < player.body.length; j++) 
+                {
+                    if (game.players[currentPlayer].body[0].x === player.body[j].x && game.players[currentPlayer].body[0].y === player.body[j].y) 
+                    {
                         //console.log(`> ${game.players[currentPlayer].id} mordeu ${player.id} e perdeu ${game.players[currentPlayer].points} pontos`);
                         player.points += game.players[currentPlayer].points;
-                        for (let k = 1; k < game.players[currentPlayer].body.length - 2; k++) {
+                        for (let k = 1; k < game.players[currentPlayer].body.length - 2; k++) 
+                        {
                             player.body.push(game.players[currentPlayer].body[k]);
                         }
                         game.players[currentPlayer].points = 0;
@@ -155,7 +168,7 @@ io.on('connection', socket => {
 
     socket.on("disconnect", () => {
         clearInterval(autoMove);
-        console.log("\x1b[33m", '> ' + socket.id + ' = DISCONNECT', "\x1b[0m");
+        console.log("\x1b[33m", '> ' + socket.id + ' = DISCONECTAR', "\x1b[0m");
         game.players.splice(currentPlayer, 1);
         online = game.players.length;
         logOnline();
@@ -167,5 +180,5 @@ server.listen(3000, (err) => {
     if (err) {
         console.log(err);
     }
-    console.log('\x1b[36m%s\x1b[0m', '> SERVER LISTENING PORT 3000');
+    console.log('\x1b[36m%s\x1b[0m', '> SERVIDOR OUVINDO NA PORTA 3000');
 });

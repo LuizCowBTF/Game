@@ -25,6 +25,36 @@ socket.on('bootstrap', (gameInitialState) => {
         context.globalAlpha = 1;
         context.clearRect(0, 0, screen.width, screen.height);
 
+        function handleKeydown(event) {
+            if (connected) {
+                const player = game.players[socket.id]
+    
+                if (event.which === 37 && player.x - 1 >= 0) {
+                    player.x = player.x - 1
+                    socket.emit('player-move', 'left')
+                    return
+                }
+    
+                if (event.which === 38 && player.y - 1 >= 0) {
+                    player.y = player.y - 1
+                    socket.emit('player-move', 'up')
+                    return
+                }
+    
+                if (event.which === 39 && player.x + 1 < game.canvasWidth) {
+                    player.x = player.x + 1
+                    socket.emit('player-move', 'right')
+                    return
+                }
+                if (event.which === 40 && player.y + 1 < game.canvasHeight) {
+                    player.y = player.y + 1
+                    socket.emit('player-move', 'down')
+                    return
+                }
+            }
+        }
+    
+
         for (const i in game.players) {
             const player = game.players[i];
             for (let j = 0; j < player.body.length; j++) {
@@ -57,34 +87,6 @@ socket.on('bootstrap', (gameInitialState) => {
         requestAnimationFrame(renderGame);
     }
 
-        function handleKeydown(event) {
-        if (connected) {
-            const player = game.players[socket.id]
-
-            if (event.which === 37 && player.x - 1 >= 0) {
-                player.x = player.x - 1
-                socket.emit('player-move', 'left')
-                return
-            }
-
-            if (event.which === 38 && player.y - 1 >= 0) {
-                player.y = player.y - 1
-                socket.emit('player-move', 'up')
-                return
-            }
-
-            if (event.which === 39 && player.x + 1 < game.canvasWidth) {
-                player.x = player.x + 1
-                socket.emit('player-move', 'right')
-                return
-            }
-            if (event.which === 40 && player.y + 1 < game.canvasHeight) {
-                player.y = player.y + 1
-                socket.emit('player-move', 'down')
-                return
-            }
-        }
-    }
 
     function updateScoreTable() {
         const scoreTable = document.getElementById('score');

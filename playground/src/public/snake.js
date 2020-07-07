@@ -1,8 +1,10 @@
 // eslint-disable-next-line no-undef
 const socket = io(document.URL);
+
 socket.on('connect', () => {
     console.log('> Connected to server');
 });
+
 socket.on('disconnect', () => {
     console.log('> Disconnected');
     if (confirm("Você foi desconectado.\nPressione OK para tentar reconectar.")) {
@@ -12,6 +14,7 @@ socket.on('disconnect', () => {
 
 const screen = document.getElementById('screen');
 const context = screen.getContext('2d');
+
 let game;
 let currentPlayer;
 
@@ -21,47 +24,20 @@ socket.on('bootstrap', (gameInitialState) => {
 
     requestAnimationFrame(renderGame);
 
-    function renderGame() {
+    function renderGame(){
         context.globalAlpha = 1;
         context.clearRect(0, 0, screen.width, screen.height);
 
-        function handleKeydown(event) {
-            if (connected) {
-                const player = game.players[socket.id]
-    
-                if (event.which === 37 && player.x - 1 >= 0) {
-                    player.x = player.x - 1
-                    socket.emit('player-move', 'left')
-                    return
-                }
-    
-                if (event.which === 38 && player.y - 1 >= 0) {
-                    player.y = player.y - 1
-                    socket.emit('player-move', 'up')
-                    return
-                }
-    
-                if (event.which === 39 && player.x + 1 < game.canvasWidth) {
-                    player.x = player.x + 1
-                    socket.emit('player-move', 'right')
-                    return
-                }
-                if (event.which === 40 && player.y + 1 < game.canvasHeight) {
-                    player.y = player.y + 1
-                    socket.emit('player-move', 'down')
-                    return
-                }
-            }
-        }
-    
-
-        for (const i in game.players) {
+        for (const i in game.players) 
+        {
             const player = game.players[i];
-            for (let j = 0; j < player.body.length; j++) {
+            for (let j = 0; j < player.body.length; j++) 
+            {
                 context.fillStyle = '#ffffff';
                 context.globalAlpha = 0.20;
                 context.fillRect(player.body[j].x, player.body[j].y, 1, 1);
-                if (player.id === socket.id) {
+                if (player.id === socket.id) 
+                {
                     context.fillStyle = '#80e040';
                     context.globalAlpha = 0.40;
                     context.fillRect(player.body[j].x, player.body[j].y, 1, 1);
@@ -70,25 +46,62 @@ socket.on('bootstrap', (gameInitialState) => {
             context.fillStyle = '#ffffff';
             context.globalAlpha = 0.40;
             context.fillRect(player.body[0].x, player.body[0].y, 1, 1);
-            if (player.id === socket.id) {
+
+            if (player.id === socket.id) 
+            {
                 context.fillStyle = '#80e040';
                 context.globalAlpha = 1;
                 context.fillRect(player.body[0].x, player.body[0].y, 1, 1);
             }
         }
-        for (const i in game.fruits) {
+
+        for (const i in game.fruits) 
+        {
             const fruit = game.fruits[i];
             context.fillStyle = '#d01050';
             context.globalAlpha = 1;
             context.fillRect(fruit.x, fruit.y, 1, 1);
         }
         updateScoreTable();
-        handleKeydown();
         requestAnimationFrame(renderGame);
     }
 
+    function handleKeydown(event){
+        if (connected) 
+        {
+            const player = game.players[socket.id]
 
-    function updateScoreTable() {
+            if (event.which === 37 && player.x - 1 >= 0) 
+            {
+                player.x = player.x - 1
+                socket.emit('player-move', 'left')
+                return
+            }
+
+            if (event.which === 38 && player.y - 1 >= 0) 
+            {
+                player.y = player.y - 1
+                socket.emit('player-move', 'up')
+                return
+            }
+
+            if (event.which === 39 && player.x + 1 < game.canvasWidth) 
+            {
+                player.x = player.x + 1
+                socket.emit('player-move', 'right')
+                return
+            }
+
+            if (event.which === 40 && player.y + 1 < game.canvasHeight) 
+            {
+                player.y = player.y + 1
+                socket.emit('player-move', 'down')
+                return
+            }
+        }
+    }
+
+    function updateScoreTable(){
         const scoreTable = document.getElementById('score');
         const maxResults = 10;
         let scoreTableInnerHTML = `
@@ -98,7 +111,8 @@ socket.on('bootstrap', (gameInitialState) => {
             </tr>
             `;
         const scoreArray = [];
-        for (const i in game.players) {
+        for (const i in game.players) 
+        {
             const player = game.players[i];
             scoreArray.push({
                 player: player.id,
@@ -107,10 +121,13 @@ socket.on('bootstrap', (gameInitialState) => {
         }
 
         const scoreArraySorted = scoreArray.sort((first, second) => {
-            if (first.score < second.score) {
+            if (first.score < second.score) 
+            {
                 return 1;
             }
-            if (first.score > second.score) {
+
+            if (first.score > second.score) 
+            {
                 return -1;
             }
             return 0;
@@ -128,15 +145,18 @@ socket.on('bootstrap', (gameInitialState) => {
 
         let playerNotInTop10 = true;
 
-        for (const score of scoreSliced) {
-            if (socket.id === score.player) {
+        for (const score of scoreSliced) 
+        {
+            if (socket.id === score.player) 
+            {
                 playerNotInTop10 = false;
                 break;
             }
             playerNotInTop10 = true;
         }
 
-        if (playerNotInTop10) {
+        if (playerNotInTop10) 
+        {
             scoreTableInnerHTML += `
                 <tr class="current-player bottom">
                     <td class="socket-id">${socket.id}</td>
@@ -153,10 +173,36 @@ socket.on('bootstrap', (gameInitialState) => {
         scoreTable.innerHTML = scoreTableInnerHTML;
     }
 
-    document.addEventListener('keydown', (event) => {
-        const keyPressed = event.key;
-        socket.emit('playerMove', keyPressed);
-    });
+    function throttle(callback, delay){
+        let isThrottled = false, args, context;
+
+        function wrapper(){
+            if (isThrottled) 
+            {
+                args = arguments;
+                context = this;
+                return;
+            }
+
+            isThrottled = true;
+            callback.apply(this, arguments);
+
+            setTimeout(() => {
+            isThrottled = false;
+            if (args) 
+            {
+                wrapper.apply(context, args);
+                args = context = null;
+            }
+            }, delay);
+        }
+
+        return wrapper;
+    }
+
+    const throttledKeydown = throttle(handleKeydown, 80)
+
+    document.addEventListener('keydown', throttledKeydown);
 
     socket.on('newGameState', gameState => {
         game = gameState;

@@ -10,7 +10,7 @@
 html,
 body {
   height: 100vh;
-  background: #000000;
+  background: #101010;
 }
 
 .info {
@@ -22,7 +22,6 @@ body {
 }
 
 main {
-  margin-top: 20px;
   display: flex;
   justify-content: center;
 }
